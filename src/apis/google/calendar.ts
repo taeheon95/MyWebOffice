@@ -12,4 +12,4 @@ const insertAcl = async (calendarId: string) => {
   return result;
 };
 
-export { getAcl };
+export { getAcl, scope };
