@@ -5,12 +5,15 @@ import * as process from "process";
 import { env } from "process";
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    https: {
-      key: readFileSync(`${__dirname}/localhost-key.pem`),
-      cert: readFileSync(`${__dirname}/localhost.pem`),
+export default defineConfig(({ command, mode }) => {
+  const env = loadEnv(mode, process.cwd());
+  return {
+    plugins: [react()],
+    server: {
+      https: {
+        key: readFileSync(`${__dirname}/${env.VITE_HTTPS_CERT_NAME}-key.pem`),
+        cert: readFileSync(`${__dirname}/${env.VITE_HTTPS_CERT_NAME}.pem`),
+      },
     },
-  },
+  };
 });
