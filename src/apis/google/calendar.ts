@@ -8,8 +8,11 @@ export const getCalendarList = async (access_token: string) => {
       Authorization: `Bearer ${access_token}`,
     },
   });
-  const result = (await response.json()) as CalendarList;
-  return result;
+  if (response.ok) {
+    return (await response.json()) as CalendarList;
+  } else {
+    throw new Error(response.statusText);
+  }
 };
 
 const getAcl = async (calendarId: string, ruleId: string) => {

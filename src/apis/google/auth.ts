@@ -4,6 +4,15 @@ const url = "https://oauth2.googleapis.com/token";
 const client_id = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const client_secret = import.meta.env.VITE_GOOGLE_CLIENT_SECRET;
 
+/**
+ * @description 구글에서 access token을 받아올 때 사용하는 함수
+ * @param refresh_token access token을 발급 받을 때 사용하는 refresh 토큰
+ * @returns GoogleAuth
+ *    access token
+ *    expires_in
+ *    scope
+ *    token_type
+ */
 const getGoogleAccessTokens = async (refresh_token: string) => {
   const response = await fetch(url, {
     headers: { "Content-Type": "application/json" },
