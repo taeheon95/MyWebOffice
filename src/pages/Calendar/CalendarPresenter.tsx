@@ -2,9 +2,10 @@ import React, { MouseEventHandler } from "react";
 import { CalendarList } from "../../types/calendar";
 
 interface PropType {
+  isInterlock: boolean;
   interlockGoogle: MouseEventHandler;
+  disInterlockGoogle: MouseEventHandler;
   getGoogleCalendarList: MouseEventHandler;
-  refreshAccessToken: MouseEventHandler;
   googleCalendarList: CalendarList;
 }
 
@@ -12,14 +13,14 @@ function CalendarPresenter(props: PropType) {
   const {
     interlockGoogle,
     getGoogleCalendarList,
-    refreshAccessToken,
     googleCalendarList,
+    isInterlock,
+    disInterlockGoogle,
   } = props;
   return (
     <>
-      <button onClick={interlockGoogle}>구글 캘린더 연동</button>
-      <button onClick={refreshAccessToken}>
-        구글 캘린더 access token 갱신
+      <button onClick={isInterlock ? disInterlockGoogle : interlockGoogle}>
+        {isInterlock ? "구글 캘린더 연동 해제" : "구글 캘린더 연동"}
       </button>
       <button onClick={getGoogleCalendarList}>
         구글 캘린더 데이터 가져오기
@@ -44,4 +45,4 @@ function CalendarPresenter(props: PropType) {
   );
 }
 
-export default CalendarPresenter;
+export default React.memo(CalendarPresenter);

@@ -1,4 +1,6 @@
 import React, { useMemo } from "react";
+import { useQuery } from "react-query";
+import { callGetGoogleAccessTokens } from "../../apis/google/auth";
 import { scope } from "../../apis/google/calendar";
 import CalendarContainer from "./CalendarContainer";
 
@@ -16,7 +18,23 @@ function CalendarIndex() {
     []
   );
 
-  return <CalendarContainer googleOauthUrl={googleOauthUrl} />;
+  const { data, isError, isSuccess } = useQuery(
+    ["google", "calendar", "access_token"],
+    async () => await callGetGoogleAccessTokens(),
+    {
+      cacheTime: 1000 * 60 * 59,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  return isSuccess ? (
+    <CalendarContainer
+      googleOauthUrl={googleOauthUrl}
+      googleAccessToken={data.access_token}
+    />
+  ) : (
+    <></>
+  );
 }
 
 export default CalendarIndex;

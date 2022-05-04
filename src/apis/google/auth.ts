@@ -13,7 +13,8 @@ const client_secret = import.meta.env.VITE_GOOGLE_CLIENT_SECRET;
  *    scope
  *    token_type
  */
-const getGoogleAccessTokens = async (refresh_token: string) => {
+const callGetGoogleAccessTokens = async () => {
+  const refresh_token = localStorage.getItem("refresh_token");
   const response = await fetch(url, {
     headers: { "Content-Type": "application/json" },
     method: "POST",
@@ -32,7 +33,7 @@ const getGoogleAccessTokens = async (refresh_token: string) => {
   }
 };
 
-const getGoogleTokens = async (code: string, service: string) => {
+const callGetGoogleTokens = async (code: string, service: string) => {
   const response = await fetch(url, {
     headers: { "Content-Type": "application/json" },
     method: "POST",
@@ -52,4 +53,4 @@ const getGoogleTokens = async (code: string, service: string) => {
   }
 };
 
-export { getGoogleTokens, getGoogleAccessTokens };
+export { callGetGoogleTokens, callGetGoogleAccessTokens };

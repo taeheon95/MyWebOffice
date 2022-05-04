@@ -1,16 +1,20 @@
 import React, { MouseEventHandler, useCallback, useState } from "react";
+import { useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { getGoogleAccessTokens } from "../../apis/google/auth";
+import { callGetGoogleAccessTokens } from "../../apis/google/auth";
 import { getCalendarList } from "../../apis/google/calendar";
 import { CalendarList } from "../../types/calendar";
 import CalendarPresenter from "./CalendarPresenter";
 
 interface PropType {
   googleOauthUrl: string;
+  googleAccessToken: string;
 }
 
 function CalendarContainer(props: PropType) {
-  const { googleOauthUrl } = props;
+  const { googleOauthUrl, googleAccessToken } = props;
+
+  const queryClient = useQueryClient();
 
   const [calendarList, setCalendarList] = useState<CalendarList>({
     kind: "",
@@ -20,36 +24,34 @@ function CalendarContainer(props: PropType) {
     nextSyncToken: "",
   });
 
+  const [isInterlock, setIsInterlock] = useState<boolean>(() => {
+    return localStorage.getItem("refresh_token") ? true : false;
+  });
+
   const interlockGoogle = useCallback<MouseEventHandler>(() => {
     location.href = googleOauthUrl;
   }, []);
 
   const getGoogleCalendarList = useCallback<MouseEventHandler>(async () => {
-    const access_token = localStorage.getItem("access_token") ?? "";
-    const calendarList = await getCalendarList(access_token);
-    console.log(calendarList);
-    setCalendarList((state) => calendarList);
+    const calendarList = await getCalendarList(googleAccessToken);
+    setCalendarList(calendarList);
   }, []);
 
   const disInterlockGoogle = useCallback<MouseEventHandler>(() => {
     localStorage.removeItem("refresh_token");
-    localStorage.removeItem("access_token");
-  }, []);
-
-  const refreshAccessToken = useCallback<MouseEventHandler>(async () => {
-    const refresh_tokens = localStorage.getItem("refresh_token");
-    const result = await getGoogleAccessTokens(refresh_tokens ?? "");
-    localStorage.setItem("access_token", result.access_token);
+    queryClient.removeQueries(["google", "calendar", "access_token"]);
+    setIsInterlock(false);
   }, []);
 
   return (
     <CalendarPresenter
+      isInterlock={isInterlock}
       interlockGoogle={interlockGoogle}
+      disInterlockGoogle={disInterlockGoogle}
       getGoogleCalendarList={getGoogleCalendarList}
-      refreshAccessToken={refreshAccessToken}
       googleCalendarList={calendarList}
     />
   );
 }
 
-export default CalendarContainer;
+export default React.memo(CalendarContainer);
